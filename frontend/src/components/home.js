@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import "../App.css";
 
 import Loading from "./loading.js";
 
@@ -13,29 +12,27 @@ const Home = () => {
   }
 
   return (
-    <container>
-      <div className="App jumbotron text-center mt-5">
-        <h1>Ticket Tracker</h1>
-        {isAuthenticated ? (
-          <div>
-            <Link to="/products">Products</Link>
-            <button
-              className="btn btn-primary btn-lg btn-login btn-block"
-              onClick={() => logout({})}
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
+    <div className="text-center">
+      <h1>Ticket Tracker</h1>
+      {isAuthenticated ? (
+        <div>
+          <Link to="/products">Products</Link>
           <button
             className="btn btn-primary btn-lg btn-login btn-block"
-            onClick={() => loginWithRedirect({})}
+            onClick={() => logout({})}
           >
-            Login
+            Logout
           </button>
-        )}
-      </div>
-    </container>
+        </div>
+      ) : (
+        <button
+          className="btn btn-primary btn-lg btn-login btn-block"
+          onClick={() => loginWithRedirect({})}
+        >
+          Login
+        </button>
+      )}
+    </div>
   );
 };
 

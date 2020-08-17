@@ -12,9 +12,11 @@ func main() {
 	// Configure JWT Middleware
 	jwtMiddleware := ConfigJWTMiddleware("https://localhost:8080", "https://dev-jg--u462.us.auth0.com/")
 
+	db := OpenDatabaseConn()
+
 	r := mux.NewRouter()
-	r.Handle("/products", jwtMiddleware.Handler(ProductsHandler)).Methods("GET")
-	r.Handle("/products/{slug}/feedback", jwtMiddleware.Handler(AddFeedbackHandler)).Methods("POST")
+	r.Handle("/products", jwtMiddleware.Handler(ProductsHandler(db))).Methods("GET")
+	r.Handle("/products/{slug}/feedback", jwtMiddleware.Handler(AddFeedbackHandler(db))).Methods("POST")
 
 	// For dev only - Set up CORS so React client can consume our API
 	corsWrapper := cors.New(cors.Options{
