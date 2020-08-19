@@ -3,7 +3,7 @@ import { Route } from "react-router-dom";
 import { withAuthenticationRequired } from "@auth0/auth0-react";
 import Loading from "./loading.js";
 
-const PrivateRoute = ({ component, ...args }) => (
+export const PrivateRoute = ({ component, ...args }) => (
   <Route
     component={withAuthenticationRequired(component, {
       onRedirecting: () => <Loading />,
@@ -11,5 +11,3 @@ const PrivateRoute = ({ component, ...args }) => (
     {...args}
   />
 );
-
-export default PrivateRoute;

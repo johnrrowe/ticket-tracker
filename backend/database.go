@@ -26,7 +26,6 @@ func printErr(err error) {
 }
 
 func QueryProducts(db *sql.DB) []Product {
-	fmt.Println("Fetch Products!!")
 	query := "SELECT * FROM products"
 	stmt, err := db.Prepare(query)
 	defer stmt.Close()

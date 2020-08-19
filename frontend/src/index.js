@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import Auth0ProviderWithHistory from "./auth0-provider-with-history.js";
-import "./index.css";
+import "./tailwind.css";
 import App from "./App";
 
 ReactDOM.render(
