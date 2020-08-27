@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import Loading from "../components/loading.js";
+import { Loading } from "../components/loading.js";
 import { NavLoggedIn, NavLoggedOut } from "../components/nav-bar.js";
 
 const Home = () => {

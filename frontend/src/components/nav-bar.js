@@ -18,8 +18,10 @@ export const NavLoggedIn = () => {
     <NavigationBar
       left={
         <div className="flex space-x-4">
-          <div>Ticket Tracker</div>
           <nav className="items-center space-x-4">
+            <button className="focus:outline-none">
+              <Link to="/dashboard">Ticket Tracker</Link>
+            </button>
             <button className="focus:outline-none">
               <Link to="/projects">Projects</Link>
             </button>
