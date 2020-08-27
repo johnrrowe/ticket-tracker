@@ -1,9 +1,7 @@
-export const GetProducts = async (token) => {
+export const AddUserIfNotExist = async (token) => {
   try {
-    // Send a GET request to the server and add the signed in user's
-    // access token in the Authorization header
-    const response = await fetch("http://localhost:8080/products", {
-      method: "GET",
+    const response = await fetch("http://localhost:8080/add_user", {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -14,5 +12,6 @@ export const GetProducts = async (token) => {
     return responseData;
   } catch (error) {
     console.error(error);
+    return null;
   }
 };

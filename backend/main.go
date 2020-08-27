@@ -2,10 +2,17 @@ package main
 
 // Import our dependencies. We'll use the standard HTTP library as well as the gorilla router for this app
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"net/http"
 )
+
+func printErr(prefix string, err error) {
+	if err != nil {
+		fmt.Println(fmt.Errorf("%s: %w", prefix, err))
+	}
+}
 
 func main() {
 
@@ -15,8 +22,7 @@ func main() {
 	db := OpenDatabaseConn()
 
 	r := mux.NewRouter()
-	r.Handle("/products", jwtMiddleware.Handler(ProductsHandler(db))).Methods("GET")
-	r.Handle("/products/{slug}/feedback", jwtMiddleware.Handler(AddFeedbackHandler(db))).Methods("POST")
+	r.Handle("/add_user", jwtMiddleware.Handler(AddUserHandler(db))).Methods("POST")
 
 	// For dev only - Set up CORS so React client can consume our API
 	corsWrapper := cors.New(cors.Options{

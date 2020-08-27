@@ -7,7 +7,7 @@ import (
 )
 
 func OpenDatabaseConn() *sql.DB {
-	db, err := sql.Open("mysql", "john:password@(localhost)/products")
+	db, err := sql.Open("mysql", "john:password@(localhost)/ticket_tracker")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -19,28 +19,19 @@ func OpenDatabaseConn() *sql.DB {
 	return db
 }
 
-func printErr(err error) {
-	if err != nil {
-		fmt.Println(err)
-	}
-}
+func CreateUserIfNotExist(db *sql.DB, user_id string, user_name string) bool {
+	query := fmt.Sprintf(
+		`INSERT INTO users (id, name)
+		 SELECT "%s", "%s" FROM DUAL
+		 WHERE NOT EXISTS (SELECT * FROM users
+			WHERE id="%s" LIMIT 1)`,
+		user_id, user_name, user_id)
 
-func QueryProducts(db *sql.DB) []Product {
-	query := "SELECT * FROM products"
 	stmt, err := db.Prepare(query)
 	defer stmt.Close()
-	printErr(err)
+	printErr("CreateUser: error preparing SQL stmt", err)
 
-	result, err := stmt.Query()
-	defer result.Close()
-	printErr(err)
-
-	products := []Product{}
-	for result.Next() {
-		var product Product
-		err = result.Scan(&product.ID, &product.Name, &product.Slug, &product.Description)
-		printErr(err)
-		products = append(products, product)
-	}
-	return products
+	_, err = stmt.Exec()
+	printErr("CreateUser: error executing SQL stmt", err)
+	return (err == nil)
 }
