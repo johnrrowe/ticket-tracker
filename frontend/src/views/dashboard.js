@@ -3,29 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import { AddUserIfNotExist } from "../components/query.js";
 import { NavLoggedIn } from "../components/nav-bar.js";
-
-const projects = [
-  { name: "proj1" },
-  { name: "proj2" },
-  { name: "proj3" },
-  { name: "proj4" },
-  { name: "proj5" },
-];
-
-const ProjectBoxes = (props) => {
-  return (
-    <div className="flex flex-row space-x-6 h-40">
-      {props.projects.map((project) => (
-        <div
-          key={project.name}
-          className="shadow rounded h-full w-64 bg-gray-200 text-center p-3"
-        >
-          {project.name}
-        </div>
-      ))}
-    </div>
-  );
-};
+import { LinkTable, BoxedList } from "../components/elements.js";
 
 export const Dashboard = () => {
   const { getAccessTokenSilently } = useAuth0();
@@ -61,7 +39,7 @@ export const Dashboard = () => {
         <div className="flex-none flex-col h-56 p-4 space-y-4">
           <div className="flex-none text-base">Projects</div>
           <div className="flex flex-row space-x-6 h-40">
-            <ProjectBoxes projects={projects} />
+            <ProjectBoxes />
           </div>
         </div>
         <div className="flex-auto bg-gray-400 h-full p-4">
@@ -79,12 +57,18 @@ export const Dashboard = () => {
   );
 };
 
+const ProjectBoxes = () => {
+  const projects = ["proj1", "proj2", "proj3", "proj4", "proj5"];
+
+  return <BoxedList list={projects} />;
+};
+
 const RecentView = (props) => {
   switch (props.view) {
     case 0:
       return (
         <div>
-          <Changed changes={changes} />
+          <Changed />
         </div>
       );
     case 1:
@@ -98,29 +82,26 @@ const RecentView = (props) => {
   }
 };
 
-const changes = [
-  { name: "job1", proj_name: "proj1", action: "created", user: "john" },
-  { name: "job2", proj_name: "proj2", action: "created", user: "john" },
-  { name: "job3", proj_name: "proj3", action: "updated", user: "john" },
-  { name: "job4", proj_name: "proj4", action: "created", user: "john" },
-  { name: "job5", proj_name: "proj5", action: "updated", user: "john" },
-];
-
-const Changed = (props) => {
-  return (
-    <div className="flex flex-col space-y-1">
-      {props.changes.map((change) => (
-        <div
-          key={change.name}
-          className="flex items-center justify-between p-3"
-        >
-          <div>
-            {change.name}:{change.proj_name}
-          </div>
-          <div>{change.action}</div>
-          <div>{change.user}</div>
+const Changed = () => {
+  const layout = (props) => {
+    return (
+      <React.Fragment>
+        <div>
+          {props.name} : {props.proj_name}
         </div>
-      ))}
-    </div>
-  );
+        <div>{props.action}</div>
+        <div>{props.user}</div>
+      </React.Fragment>
+    );
+  };
+
+  const changes = [
+    { name: "job1", proj_name: "proj1", action: "created", user: "john" },
+    { name: "job2", proj_name: "proj2", action: "created", user: "john" },
+    { name: "job3", proj_name: "proj3", action: "updated", user: "john" },
+    { name: "job4", proj_name: "proj4", action: "created", user: "john" },
+    { name: "job5", proj_name: "proj5", action: "updated", user: "john" },
+  ].map(layout);
+
+  return <LinkTable table={changes} />;
 };

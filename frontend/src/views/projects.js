@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { Loading } from "../components/loading.js";
+import { LinkTable } from "../components/elements.js";
 
 export const Projects = () => {
   const { getAccessTokenSilently, loading, user } = useAuth0();
@@ -31,14 +32,16 @@ export const Projects = () => {
           <div className="flex-none text-base">Search and Filter</div>
         </div>
         <div className="flex-auto bg-gray-400 h-full p-4">
-          <div className="flex flex-row border-b border-gray-700 justify-between">
-            <div>star</div>
-            <div>name</div>
+          <div className="flex flex-row border-b border-gray-700 justify-between p-3">
+            <div className="flex flex-row space-x-6">
+              <div>star</div>
+              <div>name</div>
+            </div>
             <div>type</div>
             <div>lead</div>
           </div>
           <div className="flex flex-col space-y-1">
-            <ProjectList projects={projects} />
+            <ProjectList />
           </div>
           <div className="border-b border-gray-700" />
         </div>
@@ -47,28 +50,27 @@ export const Projects = () => {
   );
 };
 
-const projects = [
-  { name: "proj1", type: "sprint tracker", lead: "john", star: "yes" },
-  { name: "proj2", type: "sprint tracker", lead: "john", star: "no" },
-  { name: "proj3", type: "bug tracker", lead: "john", star: "no" },
-  { name: "proj4", type: "sprint tracker", lead: "john", star: "no" },
-  { name: "proj5", type: "bug tracker", lead: "john", star: "no" },
-];
-
-const ProjectList = (props) => {
-  return (
-    <div className="flex flex-col space-y-1">
-      {props.projects.map((project) => (
-        <div
-          key={project.name}
-          className="flex items-center justify-between p-3"
-        >
-          <div>{project.star}</div>
-          <div>{project.name}</div>
-          <div>{project.type}</div>
-          <div>{project.lead}</div>
+const ProjectList = () => {
+  const layout = (props) => {
+    return (
+      <React.Fragment>
+        <div className="flex flex-row space-x-6">
+          <div className="flex">{props.star}</div>
+          <div className="flex">{props.name}</div>
         </div>
-      ))}
-    </div>
-  );
+        <div>{props.type}</div>
+        <div>{props.lead}</div>
+      </React.Fragment>
+    );
+  };
+
+  const projects = [
+    { name: "proj1", type: "sprint tracker", lead: "john", star: "yes" },
+    { name: "proj2", type: "sprint tracker", lead: "john", star: "no" },
+    { name: "proj3", type: "bug tracker", lead: "john", star: "no" },
+    { name: "proj4", type: "sprint tracker", lead: "john", star: "no" },
+    { name: "proj5", type: "bug tracker", lead: "john", star: "no" },
+  ].map(layout);
+
+  return <LinkTable table={projects} />;
 };
