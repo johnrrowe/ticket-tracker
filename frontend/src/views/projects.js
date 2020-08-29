@@ -32,18 +32,7 @@ export const Projects = () => {
           <div className="flex-none text-base">Search and Filter</div>
         </div>
         <div className="flex-auto bg-gray-400 h-full p-4">
-          <div className="flex flex-row border-b border-gray-700 justify-between p-3">
-            <div className="flex flex-row space-x-6">
-              <div>star</div>
-              <div>name</div>
-            </div>
-            <div>type</div>
-            <div>lead</div>
-          </div>
-          <div className="flex flex-col space-y-1">
-            <ProjectList />
-          </div>
-          <div className="border-b border-gray-700" />
+          <ProjectList />
         </div>
       </div>
     </div>
@@ -72,5 +61,21 @@ const ProjectList = () => {
     { name: "proj5", type: "bug tracker", lead: "john", star: "no" },
   ].map(layout);
 
-  return <LinkTable table={projects} />;
+  return (
+    <div>
+      {" "}
+      <div className="flex flex-row border-b border-gray-700 justify-between p-3">
+        <div className="flex flex-row space-x-6">
+          <div>star</div>
+          <div>name</div>
+        </div>
+        <div>type</div>
+        <div>lead</div>
+      </div>
+      <div className="flex flex-col space-y-1">
+        <LinkTable table={projects} />
+      </div>
+      <div className="border-b border-gray-700" />
+    </div>
+  );
 };

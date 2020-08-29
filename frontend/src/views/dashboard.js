@@ -15,20 +15,6 @@ export const Dashboard = () => {
     addUserIfNotExist();
   }, [getAccessTokenSilently]);
 
-  const [recentView, setRecentView] = useState(0);
-  const RecentButton = (props) => {
-    return (
-      <button
-        className="focus:outline-none font-bold hover:text-blue-700"
-        onClick={() => {
-          setRecentView(props.view);
-        }}
-      >
-        {props.name}
-      </button>
-    );
-  };
-
   return (
     <div className="flex flex-col h-screen">
       <div className="flex-none">
@@ -43,14 +29,7 @@ export const Dashboard = () => {
           </div>
         </div>
         <div className="flex-auto bg-gray-400 h-full p-4">
-          <div className="flex flex-row border-b border-gray-700 space-x-6">
-            <RecentButton view={0} name="Changed" />
-            <RecentButton view={1} name="Viewed" />
-            <RecentButton view={2} name="Assigned" />
-            <RecentButton view={3} name="Starred" />
-          </div>
-          <RecentView view={recentView} />
-          <div className="border-b border-gray-700" />
+          <Recents />
         </div>
       </div>
     </div>
@@ -63,23 +42,52 @@ const ProjectBoxes = () => {
   return <BoxedList list={projects} />;
 };
 
-const RecentView = (props) => {
-  switch (props.view) {
-    case 0:
-      return (
-        <div>
-          <Changed />
-        </div>
-      );
-    case 1:
-      return <div>Viewed</div>;
-    case 2:
-      return <div>Assigned</div>;
-    case 3:
-      return <div>Starred</div>;
-    default:
-      return <div>Changed</div>;
-  }
+const Recents = (props) => {
+  const RecentView = (props) => {
+    switch (props.view) {
+      case 0:
+        return (
+          <div>
+            <Changed />
+          </div>
+        );
+      case 1:
+        return <div>Viewed</div>;
+      case 2:
+        return <div>Assigned</div>;
+      case 3:
+        return <div>Starred</div>;
+      default:
+        return <div>Changed</div>;
+    }
+  };
+
+  const [currentView, setCurrentView] = useState(0);
+  const RecentButton = (props) => {
+    return (
+      <button
+        className="focus:outline-none font-bold hover:text-blue-700"
+        onClick={() => {
+          setCurrentView(props.view);
+        }}
+      >
+        {props.name}
+      </button>
+    );
+  };
+
+  return (
+    <React.Fragment>
+      <div className="flex flex-row border-b border-gray-700 space-x-6">
+        <RecentButton view={0} name="Changed" />
+        <RecentButton view={1} name="Viewed" />
+        <RecentButton view={2} name="Assigned" />
+        <RecentButton view={3} name="Starred" />
+      </div>
+      <RecentView view={currentView} />
+      <div className="border-b border-gray-700" />
+    </React.Fragment>
+  );
 };
 
 const Changed = () => {
