@@ -3,7 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 import { AddUserIfNotExist } from "../components/query.js";
 import { NavLoggedIn } from "../components/nav-bar.js";
-import { LinkTable, BoxedList } from "../components/elements.js";
+import { LinkTable, BoxedList } from "../components/ui-elements.js";
 
 export const Dashboard = () => {
   const { getAccessTokenSilently } = useAuth0();

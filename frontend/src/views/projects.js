@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { Loading } from "../components/loading.js";
-import { LinkTable } from "../components/elements.js";
+import { LinkTable, PopupMenu } from "../components/ui-elements.js";
+import { useForm } from "../components/custom-hooks.js";
 
 export const Projects = () => {
   const { getAccessTokenSilently, loading, user } = useAuth0();
+  const [showMenu, setShowMenu] = useState(false);
 
   if (loading || !user) {
     return (
@@ -24,9 +26,18 @@ export const Projects = () => {
       <div className="flex-auto flex-col">
         <div className="flex flex-none flex-row h-16 p-4 items-center justify-between">
           <div className="text-lg">Projects</div>
-          <button className="rounded bg-blue-600 focus:outline-none text-white px-2 py-1">
-            Create Project
-          </button>
+          <div>
+            <button
+              onClick={() => {
+                setShowMenu(!showMenu);
+              }}
+              className="rounded bg-blue-600 focus:outline-none text-white px-2 py-1"
+            >
+              Create Project
+            </button>
+
+            {showMenu && <CreateProjectMenu close={setShowMenu} />}
+          </div>
         </div>
         <div className="flex-none flex-col h-24 p-4 space-y-4">
           <div className="flex-none text-base">Search and Filter</div>
@@ -36,6 +47,68 @@ export const Projects = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const CreateProjectMenu = (props) => {
+  const submit = () => {
+    console.log("Submitted!!");
+  };
+
+  const validate = (values) => {
+    let errors = {};
+    if (!values.proj_name) {
+      errors.proj_name = "Project name is required";
+    } else if (!/^[a-z0-9_-]{3,16}$/.test(values.proj_name)) {
+      errors.proj_name = "Project name is invalid";
+    }
+
+    return errors;
+  };
+
+  const { values, errors, handleChange, handleSubmit } = useForm(
+    submit,
+    { proj_name: "", proj_type: "Lime" },
+    validate
+  );
+
+  return (
+    <PopupMenu
+      close={props.close}
+      handleSubmit={handleSubmit}
+      left={
+        <React.Fragment>
+          <label>Project Name</label>
+          <label>Project Type</label>
+        </React.Fragment>
+      }
+      right={
+        <React.Fragment>
+          <div className="flex flex-col">
+            <input
+              id="proj_name"
+              value={values.proj_name}
+              onChange={handleChange}
+              type="text"
+              className="focus:outline-none px-2"
+            />
+            {errors.proj_name && (
+              <p className="text-red-700">{errors.proj_name}</p>
+            )}
+          </div>
+          <select
+            id="proj_type"
+            value={values.proj_type}
+            onChange={handleChange}
+            className="focus:outline-none"
+          >
+            <option value="lime">Lime</option>
+            <option value="coconut">Coconut</option>
+            <option value="mango">Mango</option>
+          </select>
+        </React.Fragment>
+      }
+    />
   );
 };
 
@@ -63,7 +136,6 @@ const ProjectList = () => {
 
   return (
     <div>
-      {" "}
       <div className="flex flex-row border-b border-gray-700 justify-between p-3">
         <div className="flex flex-row space-x-6">
           <div>star</div>
