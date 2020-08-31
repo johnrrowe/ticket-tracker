@@ -6,14 +6,12 @@ import { NavLoggedIn } from "../components/nav-bar.js";
 import { LinkTable, BoxedList } from "../components/ui-elements.js";
 
 export const Dashboard = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   useEffect(() => {
-    const addUserIfNotExist = async () => {
-      const token = await getAccessTokenSilently();
-      await AddUserIfNotExist(token);
-    };
-    addUserIfNotExist();
-  }, [getAccessTokenSilently]);
+    getAccessTokenSilently().then((token) => {
+      AddUserIfNotExist(user, token);
+    });
+  }, [getAccessTokenSilently, user]);
 
   return (
     <div className="flex flex-col h-screen">

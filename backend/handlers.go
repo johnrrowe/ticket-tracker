@@ -19,15 +19,7 @@ type authHeader struct {
 	Scope string    `json:"scope"`
 }
 
-// Product will contain information about VR experiences
-type Product struct {
-	ID          int
-	Name        string
-	Slug        string
-	Description string
-}
-
-func getUserInfoFromReq(req *http.Request) string {
+func getUserIDFromReq(req *http.Request) string {
 	dataB64 := strings.Split(req.Header.Get("authorization"), ".")[1]
 	data, err := base64.StdEncoding.DecodeString(dataB64)
 	printErr("GetUserInfo: error decoding authorization", err)
@@ -39,26 +31,28 @@ func getUserInfoFromReq(req *http.Request) string {
 
 var AddUserHandler = func(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := getUserInfoFromReq(r)
-		println(userID)
-		payload, _ := json.Marshal(CreateUserIfNotExist(db, userID, "name"))
+		userID := getUserIDFromReq(r)
+		userInfo := struct {
+			Name  string `json:"name"`
+			Email string `json:"email"`
+		}{}
+		json.NewDecoder(r.Body).Decode(&userInfo)
+		payload, _ := json.Marshal(CreateUserIfNotExist(db, userID, userInfo.Name, userInfo.Email))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(payload))
 	})
 }
 
-type project struct {
-	Name      string `json:"name"`
-	Proj_type string `json:"type"`
-}
-
 var CreateProjectHandler = func(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var p project
-		json.NewDecoder(r.Body).Decode(&p)
-		println(p.Name)
-		println(p.Proj_type)
+		project := struct {
+			Name string `json:"name"`
+			Type string `json:"type"`
+		}{}
+		json.NewDecoder(r.Body).Decode(&project)
+		println(project.Name)
+		println(project.Type)
 	})
 }
 

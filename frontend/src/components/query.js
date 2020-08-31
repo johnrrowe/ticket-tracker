@@ -1,10 +1,11 @@
-export const AddUserIfNotExist = (token) => {
+export const AddUserIfNotExist = (user, token) => {
   try {
     fetch("http://localhost:8080/add_user", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify({ name: user.nickname, email: user.name }),
     });
   } catch (error) {
     console.error(error);
@@ -13,7 +14,6 @@ export const AddUserIfNotExist = (token) => {
 
 export const CreateProject = (proj, token) => {
   try {
-    console.log(token);
     fetch("http://localhost:8080/create_project", {
       method: "POST",
       headers: {

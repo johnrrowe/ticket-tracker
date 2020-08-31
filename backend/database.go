@@ -19,13 +19,13 @@ func OpenDatabaseConn() *sql.DB {
 	return db
 }
 
-func CreateUserIfNotExist(db *sql.DB, user_id string, user_name string) bool {
+func CreateUserIfNotExist(db *sql.DB, userID string, userName string, userEmail string) bool {
 	query := fmt.Sprintf(
-		`INSERT INTO users (id, name)
-		 SELECT "%s", "%s" FROM DUAL
+		`INSERT INTO users (id, name, email)
+		 SELECT "%s", "%s", "%s" FROM DUAL
 		 WHERE NOT EXISTS (SELECT * FROM users
 			WHERE id="%s" LIMIT 1)`,
-		user_id, user_name, user_id)
+		userID, userName, userEmail, userID)
 
 	stmt, err := db.Prepare(query)
 	defer stmt.Close()
