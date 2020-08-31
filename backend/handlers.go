@@ -40,10 +40,25 @@ func getUserInfoFromReq(req *http.Request) string {
 var AddUserHandler = func(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := getUserInfoFromReq(r)
+		println(userID)
 		payload, _ := json.Marshal(CreateUserIfNotExist(db, userID, "name"))
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(payload))
+	})
+}
+
+type project struct {
+	Name      string `json:"name"`
+	Proj_type string `json:"type"`
+}
+
+var CreateProjectHandler = func(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var p project
+		json.NewDecoder(r.Body).Decode(&p)
+		println(p.Name)
+		println(p.Proj_type)
 	})
 }
 
@@ -53,29 +68,5 @@ var AddUserHandler = func(db *sql.DB) http.Handler {
 
 // 		w.Header().Set("Content-Type", "application/json")
 // 		w.Write([]byte(payload))
-// 	})
-// }
-
-// var AddFeedbackHandler = func(db *sql.DB) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-// 		vars := mux.Vars(req)
-// 		slug := vars["slug"]
-
-// 		products := QueryProducts(db)
-
-// 		var product Product
-// 		for _, p := range products {
-// 			if p.Slug == slug {
-// 				product = p
-// 			}
-// 		}
-
-// 		w.Header().Set("Content-Type", "application/json")
-// 		if product.Slug != "" {
-// 			payload, _ := json.Marshal(product)
-// 			w.Write([]byte(payload))
-// 		} else {
-// 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-// 		}
 // 	})
 // }

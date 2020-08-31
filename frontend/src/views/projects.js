@@ -5,6 +5,7 @@ import { NavLoggedIn } from "../components/nav-bar.js";
 import { Loading } from "../components/loading.js";
 import { LinkTable, PopupMenu } from "../components/ui-elements.js";
 import { useForm } from "../components/custom-hooks.js";
+import { CreateProject } from "../components/query.js";
 
 export const Projects = () => {
   const { getAccessTokenSilently, loading, user } = useAuth0();
@@ -51,7 +52,11 @@ export const Projects = () => {
 };
 
 const CreateProjectMenu = (props) => {
+  const { getAccessTokenSilently } = useAuth0();
   const submit = () => {
+    getAccessTokenSilently().then((token) => {
+      CreateProject({ name: values.proj_name, type: values.proj_type }, token);
+    });
     console.log("Submitted!!");
   };
 
@@ -59,7 +64,7 @@ const CreateProjectMenu = (props) => {
     let errors = {};
     if (!values.proj_name) {
       errors.proj_name = "Project name is required";
-    } else if (!/^[a-z0-9_-]{3,16}$/.test(values.proj_name)) {
+    } else if (!/^[a-zA-Z0-9_ -]{1,}$/.test(values.proj_name)) {
       errors.proj_name = "Project name is invalid";
     }
 

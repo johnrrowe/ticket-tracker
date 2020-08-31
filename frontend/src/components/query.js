@@ -1,17 +1,30 @@
-export const AddUserIfNotExist = async (token) => {
+export const AddUserIfNotExist = (token) => {
   try {
-    const response = await fetch("http://localhost:8080/add_user", {
+    fetch("http://localhost:8080/add_user", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    const responseData = await response.json();
-
-    return responseData;
   } catch (error) {
     console.error(error);
-    return null;
+  }
+};
+
+export const CreateProject = (proj, token) => {
+  try {
+    console.log(token);
+    fetch("http://localhost:8080/create_project", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        name: proj.name,
+        type: proj.type,
+      }),
+    });
+  } catch (error) {
+    console.error(error);
   }
 };

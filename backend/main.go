@@ -23,6 +23,7 @@ func main() {
 
 	r := mux.NewRouter()
 	r.Handle("/add_user", jwtMiddleware.Handler(AddUserHandler(db))).Methods("POST")
+	r.Handle("/create_project", jwtMiddleware.Handler(CreateProjectHandler(db))).Methods("POST")
 
 	// For dev only - Set up CORS so React client can consume our API
 	corsWrapper := cors.New(cors.Options{
