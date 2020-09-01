@@ -28,3 +28,21 @@ export const CreateProject = (proj, token) => {
     console.error(error);
   }
 };
+
+export const GetUserProjects = (token) => {
+  try {
+    const responseData = fetch("http://localhost:8080/get_projects", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((response) => {
+      return response.json();
+    });
+
+    return responseData;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { Loading } from "../components/loading.js";
 import { LinkTable, PopupMenu } from "../components/ui-elements.js";
 import { useForm } from "../components/custom-hooks.js";
-import { CreateProject } from "../components/query.js";
+import { CreateProject, GetUserProjects } from "../components/query.js";
 
 export const Projects = () => {
-  const { getAccessTokenSilently, loading, user } = useAuth0();
+  const { loading, user } = useAuth0();
   const [showMenu, setShowMenu] = useState(false);
 
   if (loading || !user) {
@@ -57,7 +57,6 @@ const CreateProjectMenu = (props) => {
     getAccessTokenSilently().then((token) => {
       CreateProject({ name: values.proj_name, type: values.proj_type }, token);
     });
-    console.log("Submitted!!");
   };
 
   const validate = (values) => {
@@ -118,26 +117,33 @@ const CreateProjectMenu = (props) => {
 };
 
 const ProjectList = () => {
-  const layout = (props) => {
+  const layout = (project) => {
     return (
       <React.Fragment>
         <div className="flex flex-row space-x-6">
-          <div className="flex">{props.star}</div>
-          <div className="flex">{props.name}</div>
+          <div className="flex">{project.star}</div>
+          <div className="flex">{project.name}</div>
         </div>
-        <div>{props.type}</div>
-        <div>{props.lead}</div>
+        <div>{project.type}</div>
+        <div>{project.lead}</div>
       </React.Fragment>
     );
   };
 
-  const projects = [
-    { name: "proj1", type: "sprint tracker", lead: "john", star: "yes" },
-    { name: "proj2", type: "sprint tracker", lead: "john", star: "no" },
-    { name: "proj3", type: "bug tracker", lead: "john", star: "no" },
-    { name: "proj4", type: "sprint tracker", lead: "john", star: "no" },
-    { name: "proj5", type: "bug tracker", lead: "john", star: "no" },
-  ].map(layout);
+  const { getAccessTokenSilently } = useAuth0();
+  const [projects, setProjects] = useState(null);
+
+  useEffect(() => {
+    getAccessTokenSilently()
+      .then((token) => {
+        return GetUserProjects(token);
+      })
+      .then((projectData) => {
+        if (projectData) {
+          setProjects(projectData.map(layout));
+        }
+      });
+  }, []);
 
   return (
     <div>
@@ -150,7 +156,7 @@ const ProjectList = () => {
         <div>lead</div>
       </div>
       <div className="flex flex-col space-y-1">
-        <LinkTable table={projects} />
+        {projects && <LinkTable table={projects} />}
       </div>
       <div className="border-b border-gray-700" />
     </div>

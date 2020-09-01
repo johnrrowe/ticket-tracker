@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	// "github.com/gorilla/mux"
 	"net/http"
 	"strings"
 )
@@ -19,6 +18,18 @@ type authHeader struct {
 	Scope string    `json:"scope"`
 }
 
+type user struct {
+	ID    string
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type project struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Lead string `json:"lead"`
+}
+
 func getUserIDFromReq(req *http.Request) string {
 	dataB64 := strings.Split(req.Header.Get("authorization"), ".")[1]
 	data, err := base64.StdEncoding.DecodeString(dataB64)
@@ -30,37 +41,31 @@ func getUserIDFromReq(req *http.Request) string {
 }
 
 var AddUserHandler = func(db *sql.DB) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := getUserIDFromReq(r)
-		userInfo := struct {
-			Name  string `json:"name"`
-			Email string `json:"email"`
-		}{}
-		json.NewDecoder(r.Body).Decode(&userInfo)
-		payload, _ := json.Marshal(CreateUserIfNotExist(db, userID, userInfo.Name, userInfo.Email))
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		userID := getUserIDFromReq(req)
+		user := user{userID, "", ""}
+		json.NewDecoder(req.Body).Decode(&user)
+		CreateUserIfNotExist(db, user)
+	})
+}
+
+var CreateProjectHandler = func(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		project := project{"", "", getUserIDFromReq(req)}
+		json.NewDecoder(req.Body).Decode(&project)
+		CreateProject(db, project)
+	})
+}
+
+var GetProjectsHandler = func(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		userID := getUserIDFromReq(req)
+		projects := GetProjects(db, userID)
+
+		payload, err := json.Marshal(projects)
+		printErr("GetProjects: error marshalling projects", err)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(payload))
 	})
 }
-
-var CreateProjectHandler = func(db *sql.DB) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		project := struct {
-			Name string `json:"name"`
-			Type string `json:"type"`
-		}{}
-		json.NewDecoder(r.Body).Decode(&project)
-		println(project.Name)
-		println(project.Type)
-	})
-}
-
-// var ProductsHandler = func(db *sql.DB) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		payload, _ := json.Marshal(QueryProducts(db))
-
-// 		w.Header().Set("Content-Type", "application/json")
-// 		w.Write([]byte(payload))
-// 	})
-// }
