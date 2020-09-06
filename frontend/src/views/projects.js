@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
@@ -119,14 +120,17 @@ const CreateProjectMenu = (props) => {
 const ProjectList = () => {
   const layout = (project) => {
     return (
-      <React.Fragment>
+      <Link
+        to={`/projects/boards/?id=${project.id}`}
+        className="flex items-center justify-between p-3"
+      >
         <div className="flex flex-row space-x-6">
           <div className="flex">{project.star}</div>
           <div className="flex">{project.name}</div>
         </div>
         <div>{project.type}</div>
         <div>{project.lead}</div>
-      </React.Fragment>
+      </Link>
     );
   };
 

@@ -50,7 +50,7 @@ func CreateProject(db *sql.DB, info project) bool {
 }
 
 func GetProjects(db *sql.DB, userID string) []project {
-	q := `SELECT projects.name, users.name, type
+	q := `SELECT projects.id, projects.name, users.name, type
 		  FROM users 
 		  JOIN (
 			SELECT id, name, lead, type
@@ -59,7 +59,7 @@ func GetProjects(db *sql.DB, userID string) []project {
 				ON id = project_id
 				WHERE user_id = ?
 		  ) AS projects
-		  	ON users.id = lead;`
+		  	ON users.id = lead`
 
 	rows, err := db.Query(q, userID)
 	defer rows.Close()
@@ -68,7 +68,7 @@ func GetProjects(db *sql.DB, userID string) []project {
 	var projects []project
 	for rows.Next() {
 		var p project
-		err = rows.Scan(&p.Name, &p.Lead, &p.Type)
+		err = rows.Scan(&p.ID, &p.Name, &p.Lead, &p.Type)
 		printErr("GetProjects: error scanning row", err)
 
 		projects = append(projects, p)

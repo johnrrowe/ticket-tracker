@@ -25,6 +25,7 @@ type user struct {
 }
 
 type project struct {
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Lead string `json:"lead"`
@@ -51,7 +52,7 @@ var AddUserHandler = func(db *sql.DB) http.Handler {
 
 var CreateProjectHandler = func(db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-		project := project{"", "", getUserIDFromReq(req)}
+		project := project{0, "", "", getUserIDFromReq(req)}
 		json.NewDecoder(req.Body).Decode(&project)
 		CreateProject(db, project)
 	})

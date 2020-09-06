@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { AddUserIfNotExist } from "../components/query.js";
@@ -91,13 +92,16 @@ const Recents = (props) => {
 const Changed = () => {
   const layout = (props) => {
     return (
-      <React.Fragment>
+      <Link
+        to={`/dashboard/`}
+        className="flex items-center justify-between p-3"
+      >
         <div>
           {props.name} : {props.proj_name}
         </div>
         <div>{props.action}</div>
         <div>{props.user}</div>
-      </React.Fragment>
+      </Link>
     );
   };
 

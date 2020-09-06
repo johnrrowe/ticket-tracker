@@ -5,7 +5,7 @@ export const LinkTable = (props) => {
     <div className="flex flex-col space-y-1">
       {props.table.map((entry, index) => (
         <button key={index} className="hover:bg-gray-200 focus:outline-none">
-          <div className="flex items-center justify-between p-3">{entry}</div>
+          {entry}
         </button>
       ))}
     </div>
@@ -14,7 +14,7 @@ export const LinkTable = (props) => {
 
 export const BoxedList = (props) => {
   return (
-    <div className="flex flex-row space-x-6 h-40">
+    <div className="flex flex-row space-x-6 h-full">
       {props.list.map((item, index) => (
         <div
           key={index}

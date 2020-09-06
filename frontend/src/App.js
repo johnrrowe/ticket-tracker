@@ -5,13 +5,17 @@ import Home from "./views/home.js";
 import { PrivateRoute } from "./components/private-route.js";
 import { Dashboard } from "./views/dashboard.js";
 import { Projects } from "./views/projects.js";
+import { JobBoard } from "./views/job-board.js";
+import { Backlog } from "./views/backlog.js";
 
 const App = () => {
   return (
     <Switch>
       <Route exact path="/" component={Home} />
       <PrivateRoute path="/dashboard" component={Dashboard} />
-      <PrivateRoute path="/projects" component={Projects} />
+      <PrivateRoute exact path="/projects" component={Projects} />
+      <PrivateRoute path="/projects/boards/" component={JobBoard} />
+      <PrivateRoute path="/projects/backlog/" component={Backlog} />
     </Switch>
   );
 };

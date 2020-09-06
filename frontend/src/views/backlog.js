@@ -1,36 +1,20 @@
-import React, { useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import React from "react";
+
 import { NavLoggedIn } from "../components/nav-bar.js";
-import { AddUserIfNotExist } from "../components/query.js";
 
-const LoggedIn = () => {
-  const { getAccessTokenSilently, loading, user } = useAuth0();
-
-  useEffect(() => {
-    const addUserIfNotExist = async () => {
-      const token = await getAccessTokenSilently();
-      await AddUserIfNotExist(token);
-    };
-    addUserIfNotExist();
-  }, [getAccessTokenSilently]);
-
-  if (loading || !user) {
-    return <div>Loading...</div>;
-  }
-
+export const Backlog = () => {
   return (
-    <div>
-      <NavLoggedIn />
-      <div className="App text-center">
-        <h1>Ticket Tracker</h1>
-        <p>
-          Hi, {user.name}! Below you'll find the latest games that need
-          feedback. Please provide honest feedback so developers can make the
-          best games.
-        </p>
+    <div className="flex flex-col h-screen">
+      <div className="flex-none">
+        <NavLoggedIn />
+      </div>
+      <div className="flex-auto flex-col">
+        <div className="flex-none h-16 p-4 text-lg">Backlog Header</div>
+        <div className="flex-none flex-col h-full p-4 space-y-4">
+          <div className="flex-none text-base">Sprints</div>
+          <div className="flex flex-row space-x-6 h-64">sprint list . . .</div>
+        </div>
       </div>
     </div>
   );
 };
-
-export default LoggedIn;
