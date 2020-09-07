@@ -81,14 +81,9 @@ const CreateProjectMenu = (props) => {
     <PopupMenu
       close={props.close}
       handleSubmit={handleSubmit}
-      left={
+      formContent={[
         <React.Fragment>
           <label>Project Name</label>
-          <label>Project Type</label>
-        </React.Fragment>
-      }
-      right={
-        <React.Fragment>
           <div className="flex flex-col">
             <input
               id="proj_name"
@@ -101,6 +96,9 @@ const CreateProjectMenu = (props) => {
               <p className="text-red-700">{errors.proj_name}</p>
             )}
           </div>
+        </React.Fragment>,
+        <React.Fragment>
+          <label>Project Type</label>
           <select
             id="proj_type"
             value={values.proj_type}
@@ -111,8 +109,8 @@ const CreateProjectMenu = (props) => {
             <option value="coconut">Coconut</option>
             <option value="mango">Mango</option>
           </select>
-        </React.Fragment>
-      }
+        </React.Fragment>,
+      ]}
     />
   );
 };

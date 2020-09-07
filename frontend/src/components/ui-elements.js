@@ -41,11 +41,17 @@ export const PopupMenu = (props) => {
         </button>
         <form
           onSubmit={props.handleSubmit}
-          className="flex flex-row space-x-4"
+          className="flex flex-col space-y-2"
           noValidate
         >
-          <div className="flex flex-col space-y-2">{props.left}</div>
-          <div className="flex flex-col space-y-2">{props.right}</div>
+          {props.formContent.map((item, index) => (
+            <div
+              key={index}
+              className="flex text-center justify-between space-x-4"
+            >
+              {item}
+            </div>
+          ))}
         </form>
         <button onClick={props.handleSubmit} className="focus:outline-none">
           Create

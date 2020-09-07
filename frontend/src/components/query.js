@@ -46,3 +46,24 @@ export const GetUserProjects = (token) => {
     return null;
   }
 };
+
+export const CreateSprint = (sprint, token) => {
+  try {
+    const project_id = new URLSearchParams(window.location.search).get("id");
+
+    fetch("http://localhost:8080/create_sprint", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        project: project_id,
+        name: sprint.name,
+        start: sprint.start,
+        end: sprint.end,
+      }),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};

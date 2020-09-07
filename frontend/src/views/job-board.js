@@ -28,7 +28,10 @@ const JobStatuses = () => {
   const projectID = new URLSearchParams(window.location.search).get("id");
 
   return Object.keys(projects).length === 0 ? (
-    <Link to={`/projects/backlog/?id=${projectID}`}>No Sprints</Link>
+    <div>
+      <div>No Sprints Started</div>
+      <Link to={`/projects/backlog/?id=${projectID}`}>Go to Backlog</Link>
+    </div>
   ) : (
     <BoxedList list={projects} />
   );
