@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { useAuth0 } from "@auth0/auth0-react";
-import { CreateSprint } from "../components/query.js";
+import { CreateSprint, GetSprints } from "../components/query.js";
 import { useForm } from "../components/custom-hooks.js";
-import { PopupMenu, PopupDupe } from "../components/ui-elements.js";
+import { PopupMenu } from "../components/ui-elements.js";
 
 export const Backlog = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -31,7 +31,6 @@ export const Backlog = () => {
             {showMenu && <CreateSprintMenu close={setShowMenu} />}
           </div>
           <SprintList />
-          <div className="flex flex-row space-x-6 h-64">sprint list . . .</div>
         </div>
       </div>
     </div>
@@ -39,17 +38,26 @@ export const Backlog = () => {
 };
 
 const SprintList = () => {
-  const sprints = ["s1", "s2"];
+  const { getAccessTokenSilently } = useAuth0();
+  const [sprints, setSprints] = useState(null);
 
-  const format_sprint = (sprint) => {
-    return <div>{sprint}</div>;
+  useEffect(() => {
+    getAccessTokenSilently()
+      .then((token) => {
+        return GetSprints(token);
+      })
+      .then((sprintData) => {
+        if (sprintData) {
+          setSprints(sprintData.map(layout));
+        }
+      });
+  }, []);
+
+  const layout = (sprint) => {
+    return <div>{sprint.name}</div>;
   };
 
-  return (
-    <div className="flex flex-col">
-      {Object.keys(sprints) === 0 ? null : sprints.map(format_sprint)}
-    </div>
-  );
+  return <div className="flex flex-col">{sprints ? sprints : null}</div>;
 };
 
 const CreateSprintMenu = (props) => {

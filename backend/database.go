@@ -50,16 +50,16 @@ func CreateProject(db *sql.DB, info project) bool {
 }
 
 func GetProjects(db *sql.DB, userID string) []project {
-	q := `SELECT projects.id, projects.name, users.name, type
-		  FROM users 
+	q := `SELECT projects.id, projects.name, p_user.name, type
+		  FROM projects
 		  JOIN (
-			SELECT id, name, lead, type
-			FROM projects
-			JOIN project_users
-				ON id = project_id
+		  	SELECT project_id, name
+		  	FROM users
+		  	JOIN project_users
+				ON id = user_id
 				WHERE user_id = ?
-		  ) AS projects
-		  	ON users.id = lead`
+		  ) AS p_user
+		  ON projects.id = p_user.project_id`
 
 	rows, err := db.Query(q, userID)
 	defer rows.Close()
@@ -77,4 +77,51 @@ func GetProjects(db *sql.DB, userID string) []project {
 	printErr("GetProjects", err)
 
 	return projects
+}
+
+func CreateSprint(db *sql.DB, info sprint) bool {
+	q := `INSERT INTO sprints (project_id, name, start, end)
+		  VALUES (?, ?, ?, ?)`
+	stmt, err := db.Prepare(q)
+	defer stmt.Close()
+	printErr("CreateSprint: error preparing query", err)
+	result, err := stmt.Exec(info.ProjectID, info.Name, info.Start, info.End)
+	printErr("CreateSprint: error executing stmt", err)
+
+	q = `INSERT INTO job_status (sprint_id, name)
+		 VALUES (?, ?)`
+	lastID, err := result.LastInsertId()
+	printErr("CreateSprint: error retrieving ID", err)
+
+	_, err = db.Query(q, lastID, "To Do")
+	printErr("CreateSprint: error inserting job_status", err)
+	_, err = db.Query(q, lastID, "In Progress")
+	printErr("CreateSprint: error inserting job_status", err)
+	_, err = db.Query(q, lastID, "Done")
+	printErr("CreateSprint: error inserting job_status", err)
+
+	return (err == nil)
+}
+
+func GetSprints(db *sql.DB, projectID string) []sprint {
+	q := `SELECT name, start, end
+		  FROM sprints
+		  WHERE project_id = ?`
+
+	rows, err := db.Query(q, projectID)
+	defer rows.Close()
+	printErr("GetSprints: error querying sprints", err)
+
+	var sprints []sprint
+	for rows.Next() {
+		var s sprint
+		err = rows.Scan(&s.Name, &s.Start, &s.End)
+		printErr("GetSprints: error scanning row", err)
+
+		sprints = append(sprints, s)
+	}
+	err = rows.Err()
+	printErr("GetSprints", err)
+
+	return sprints
 }

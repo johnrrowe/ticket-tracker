@@ -1,3 +1,5 @@
+const hostname = "http://localhost:8080";
+
 export const AddUserIfNotExist = (user, token) => {
   try {
     fetch("http://localhost:8080/add_user", {
@@ -63,6 +65,28 @@ export const CreateSprint = (sprint, token) => {
         end: sprint.end,
       }),
     });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const GetSprints = (token) => {
+  try {
+    const project_id = new URLSearchParams(window.location.search).get("id");
+
+    const responseData = fetch("http://localhost:8080/get_sprints", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Project: `${project_id}`,
+      },
+    }).then((response) => {
+      return response.json();
+    });
+
+    console.log(responseData);
+
+    return responseData;
   } catch (error) {
     console.error(error);
   }

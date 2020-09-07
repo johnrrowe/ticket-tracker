@@ -23,15 +23,22 @@ func main() {
 	defer db.Close()
 
 	r := mux.NewRouter()
+
+	// user handlers
 	r.Handle("/add_user", jwtMiddleware.Handler(AddUserHandler(db))).Methods("POST")
+
+	// project handlers
 	r.Handle("/create_project", jwtMiddleware.Handler(CreateProjectHandler(db))).Methods("POST")
 	r.Handle("/get_projects", jwtMiddleware.Handler(GetProjectsHandler(db))).Methods("GET")
+
+	// sprint handlers
+	r.Handle("/create_sprint", jwtMiddleware.Handler(CreateSprintHandler(db))).Methods("POST")
+	r.Handle("/get_sprints", jwtMiddleware.Handler(GetSprintsHandler(db))).Methods("GET")
 
 	// For dev only - Set up CORS so React client can consume our API
 	corsWrapper := cors.New(cors.Options{
 		AllowedMethods: []string{"GET", "POST"},
 		AllowedHeaders: []string{"Content-Type", "Origin", "Accept", "*"},
 	})
-
 	http.ListenAndServe(":8080", corsWrapper.Handler(r))
 }
