@@ -76,8 +76,6 @@ type sprint struct {
 	ID        int
 	ProjectID string `json:"project"`
 	Name      string `json:"name"`
-	Start     string `json:"start"`
-	End       string `json:"end"`
 }
 
 var CreateSprintHandler = func(db *sql.DB) http.Handler {

@@ -119,7 +119,7 @@ const ProjectList = () => {
   const layout = (project) => {
     return (
       <Link
-        to={`/projects/boards/?id=${project.id}`}
+        to={`/projects/boards/?project=${project.id}`}
         className="flex items-center justify-between p-3"
       >
         <div className="flex flex-row space-x-6">

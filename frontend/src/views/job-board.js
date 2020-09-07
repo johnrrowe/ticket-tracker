@@ -25,12 +25,12 @@ export const JobBoard = () => {
 
 const JobStatuses = () => {
   const projects = {};
-  const projectID = new URLSearchParams(window.location.search).get("id");
+  const projectID = new URLSearchParams(window.location.search).get("project");
 
   return Object.keys(projects).length === 0 ? (
     <div>
       <div>No Sprints Started</div>
-      <Link to={`/projects/backlog/?id=${projectID}`}>Go to Backlog</Link>
+      <Link to={`/projects/backlog/?project=${projectID}`}>Go to Backlog</Link>
     </div>
   ) : (
     <BoxedList list={projects} />

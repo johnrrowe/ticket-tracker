@@ -80,12 +80,12 @@ func GetProjects(db *sql.DB, userID string) []project {
 }
 
 func CreateSprint(db *sql.DB, info sprint) bool {
-	q := `INSERT INTO sprints (project_id, name, start, end)
-		  VALUES (?, ?, ?, ?)`
+	q := `INSERT INTO sprints (project_id, name)
+		  VALUES (?, ?)`
 	stmt, err := db.Prepare(q)
 	defer stmt.Close()
 	printErr("CreateSprint: error preparing query", err)
-	result, err := stmt.Exec(info.ProjectID, info.Name, info.Start, info.End)
+	result, err := stmt.Exec(info.ProjectID, info.Name)
 	printErr("CreateSprint: error executing stmt", err)
 
 	q = `INSERT INTO job_status (sprint_id, name)
@@ -104,7 +104,7 @@ func CreateSprint(db *sql.DB, info sprint) bool {
 }
 
 func GetSprints(db *sql.DB, projectID string) []sprint {
-	q := `SELECT name, start, end
+	q := `SELECT name, project_id
 		  FROM sprints
 		  WHERE project_id = ?`
 
@@ -115,7 +115,7 @@ func GetSprints(db *sql.DB, projectID string) []sprint {
 	var sprints []sprint
 	for rows.Next() {
 		var s sprint
-		err = rows.Scan(&s.Name, &s.Start, &s.End)
+		err = rows.Scan(&s.Name, &s.ProjectID)
 		printErr("GetSprints: error scanning row", err)
 
 		sprints = append(sprints, s)

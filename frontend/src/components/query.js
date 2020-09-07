@@ -51,7 +51,9 @@ export const GetUserProjects = (token) => {
 
 export const CreateSprint = (sprint, token) => {
   try {
-    const project_id = new URLSearchParams(window.location.search).get("id");
+    const project_id = new URLSearchParams(window.location.search).get(
+      "project"
+    );
 
     fetch("http://localhost:8080/create_sprint", {
       method: "POST",
@@ -61,8 +63,6 @@ export const CreateSprint = (sprint, token) => {
       body: JSON.stringify({
         project: project_id,
         name: sprint.name,
-        start: sprint.start,
-        end: sprint.end,
       }),
     });
   } catch (error) {
@@ -72,7 +72,9 @@ export const CreateSprint = (sprint, token) => {
 
 export const GetSprints = (token) => {
   try {
-    const project_id = new URLSearchParams(window.location.search).get("id");
+    const project_id = new URLSearchParams(window.location.search).get(
+      "project"
+    );
 
     const responseData = fetch("http://localhost:8080/get_sprints", {
       method: "GET",
