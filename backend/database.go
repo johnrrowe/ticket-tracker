@@ -19,7 +19,7 @@ func OpenDatabaseConn() *sql.DB {
 	return db
 }
 
-func CreateUserIfNotExist(db *sql.DB, info user) {
+func CreateUserIfNotExist(db *sql.DB, info user) bool {
 	q := `INSERT INTO users (id, name, email)
 		  SELECT ?, ?, ? FROM DUAL
 		  WHERE NOT EXISTS (SELECT * FROM users
@@ -27,6 +27,7 @@ func CreateUserIfNotExist(db *sql.DB, info user) {
 
 	_, err := db.Query(q, info.ID, info.Name, info.Email, info.ID)
 	printErr("CreateUser: error querying db", err)
+	return (err == nil)
 }
 
 func CreateProject(db *sql.DB, info project) bool {
@@ -124,4 +125,26 @@ func GetSprints(db *sql.DB, projectID string) []sprint {
 	printErr("GetSprints", err)
 
 	return sprints
+}
+
+func StartSprint(db *sql.DB, info sprint) bool {
+	q := `INSERT INTO active_sprints (sprint_id, project_id, start, end)
+		  VALUES (?, ?, ?, ?)`
+
+	_, err := db.Query(q, info.ID, info.ProjectID, info.Start, info.End)
+	printErr("CreateUser: error querying db", err)
+	return (err == nil)
+}
+
+func GetActiveSprint(db *sql.DB, projectID string) sprint {
+	q := `SELECT * FROM active_sprints
+		  WHERE project_id = ?`
+
+	row := db.QueryRow(q, projectID)
+	var s sprint
+	err := row.Scan(&s.ID, &s.ProjectID, &s.Start, &s.End)
+	printErr("GetActiveSprint: error scanning row", err)
+
+	return s
+
 }

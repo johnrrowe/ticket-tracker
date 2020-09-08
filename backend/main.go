@@ -34,6 +34,8 @@ func main() {
 	// sprint handlers
 	r.Handle("/create_sprint", jwtMiddleware.Handler(CreateSprintHandler(db))).Methods("POST")
 	r.Handle("/get_sprints", jwtMiddleware.Handler(GetSprintsHandler(db))).Methods("GET")
+	r.Handle("/start_sprint", jwtMiddleware.Handler(StartSprintHandler(db))).Methods("POST")
+	r.Handle("/get_active", jwtMiddleware.Handler(GetActiveSprintHandler(db))).Methods("GET")
 
 	// For dev only - Set up CORS so React client can consume our API
 	corsWrapper := cors.New(cors.Options{

@@ -1,13 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { useAuth0 } from "@auth0/auth0-react";
-import { CreateSprint, GetSprints } from "../components/query.js";
+import {
+  CreateSprint,
+  GetSprints,
+  StartSprint,
+  GetActiveSprint,
+} from "../components/query.js";
 import { useForm, useFetch } from "../components/custom-hooks.js";
-import { PopupMenu, LinkTable } from "../components/ui-elements.js";
+import { PopupMenu } from "../components/ui-elements.js";
 
 export const Backlog = () => {
-  const [showMenu, setShowMenu] = useState(false);
+  const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const [showStartMenu, setShowStartMenu] = useState(false);
 
   return (
     <div className="flex flex-col h-screen">
@@ -16,35 +22,48 @@ export const Backlog = () => {
       </div>
       <div className="flex-auto flex-col">
         <div className="flex-none h-16 p-4 text-lg">Backlog Header</div>
-        <div className="flex-none flex-col h-full p-4 space-y-4">
+        <div className="flex-none flex-col h-full p-4 space-y-8">
           <div className="flex flex-none flex-row text-base justify-between">
             <div>Sprints</div>
             <button
               onClick={() => {
-                setShowMenu(!showMenu);
+                setShowCreateMenu(!showCreateMenu);
               }}
               className="rounded bg-blue-600 focus:outline-none text-white px-2 py-1"
             >
               Create Sprint
             </button>
 
-            {showMenu && <CreateSprintMenu close={setShowMenu} />}
+            {showCreateMenu && <CreateSprintMenu close={setShowCreateMenu} />}
           </div>
-          <SprintList />
+          <SprintList setShowMenu={setShowStartMenu} />
+          {showStartMenu && (
+            <StartSprintMenu
+              close={setShowStartMenu}
+              sprintID={showStartMenu}
+            />
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-const SprintList = () => {
+const SprintList = (props) => {
+  const activeSprintID = useFetch(GetActiveSprint).ID;
   const layout = (sprint) => {
     return (
       <div
         key={sprint.ID}
         className="flex flex-col h-full w-full shadow rounded bg-gray-200 p-3"
       >
-        {sprint.name}
+        <div className="flex justify-between">
+          {sprint.name}
+          <ManageSprintBtns
+            activeSprint={activeSprintID}
+            sprintID={sprint.ID}
+          />
+        </div>
         <button className="flex focus:outline-none w-24">Create Job</button>
       </div>
     );
@@ -69,8 +88,6 @@ const CreateSprintMenu = (props) => {
       CreateSprint(
         {
           name: values.sprint_name,
-          start: values.startDate,
-          end: values.endDate,
         },
         token
       );
@@ -93,7 +110,7 @@ const CreateSprintMenu = (props) => {
     { sprint_name: "" },
     validate
   );
-
+  console.log(values.sprint_name);
   return (
     <PopupMenu
       close={props.close}
@@ -116,5 +133,93 @@ const CreateSprintMenu = (props) => {
         </React.Fragment>,
       ]}
     />
+  );
+};
+
+const StartSprintMenu = (props) => {
+  const { getAccessTokenSilently } = useAuth0();
+  const submit = () => {
+    getAccessTokenSilently().then((token) => {
+      StartSprint(
+        {
+          ID: values.ID,
+          start: values.startDate,
+          end: values.endDate,
+        },
+        token
+      );
+    });
+  };
+
+  const validate = (values) => {
+    const errors = {};
+    return errors;
+  };
+
+  const { values, errors, handleChange, handleSubmit } = useForm(
+    submit,
+    { ID: props.sprintID, startDate: "", endDate: "" },
+    validate
+  );
+  return (
+    <PopupMenu
+      close={props.close}
+      handleSubmit={handleSubmit}
+      formContent={[
+        <React.Fragment>
+          <label>Start Date</label>
+          <div className="flex flex-col">
+            <input
+              id="startDate"
+              value={values.startDate}
+              onChange={handleChange}
+              type="date"
+              className="focus:outline-none"
+            />
+          </div>
+        </React.Fragment>,
+        <React.Fragment>
+          <label>End Date</label>
+          <div className="flex flex-col">
+            <input
+              id="endDate"
+              value={values.endDate}
+              onChange={handleChange}
+              type="date"
+              className="focus:outline-none"
+            />
+          </div>
+        </React.Fragment>,
+      ]}
+    />
+  );
+};
+
+const ManageSprintBtns = (props) => {
+  return (
+    <div>
+      {props.activeSprint ? (
+        <div>
+          {props.activeSprint === props.sprintID ? (
+            <button className="rounded bg-gray-500 focus:outline-none text-gray-700 px-2 py-1">
+              Complete Sprint
+            </button>
+          ) : (
+            <button className="rounded bg-gray-400 focus:outline-none text-gray-500 px-2 py-1">
+              Start Sprint
+            </button>
+          )}
+        </div>
+      ) : (
+        <button
+          onClick={() => {
+            props.setShowMenu(props.sprintID);
+          }}
+          className="rounded bg-blue-600 focus:outline-none text-white px-2 py-1"
+        >
+          Start Sprint
+        </button>
+      )}
+    </div>
   );
 };

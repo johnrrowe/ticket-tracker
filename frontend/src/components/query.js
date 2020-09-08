@@ -70,3 +70,30 @@ export const GetSprints = (token) => {
     token
   );
 };
+
+export const StartSprint = (sprint, token) => {
+  const project_id = new URLSearchParams(window.location.search).get("project");
+  AuthorizedFetch(
+    "/start_sprint",
+    "POST",
+    null,
+    {
+      ID: sprint.ID,
+      project: project_id,
+      start: sprint.start,
+      end: sprint.end,
+    },
+    token
+  );
+};
+
+export const GetActiveSprint = (token) => {
+  const project_id = new URLSearchParams(window.location.search).get("project");
+  return AuthorizedFetch(
+    "/get_active",
+    "GET",
+    { project: project_id },
+    null,
+    token
+  );
+};

@@ -73,9 +73,11 @@ var GetProjectsHandler = func(db *sql.DB) http.Handler {
 }
 
 type sprint struct {
-	ID        int    `json:"ID"`
+	ID        string `json:"ID"`
 	ProjectID string `json:"project"`
 	Name      string `json:"name"`
+	Start     string `json:"start"`
+	End       string `json:"end"`
 }
 
 var CreateSprintHandler = func(db *sql.DB) http.Handler {
@@ -93,6 +95,28 @@ var GetSprintsHandler = func(db *sql.DB) http.Handler {
 
 		payload, err := json.Marshal(sprints)
 		printErr("GetSprints: error marshalling sprints", err)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(payload))
+	})
+}
+
+var StartSprintHandler = func(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		var s sprint
+		json.NewDecoder(req.Body).Decode(&s)
+		println(s.ID)
+		StartSprint(db, s)
+	})
+}
+
+var GetActiveSprintHandler = func(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		projectID := req.Header.Get("project")
+		activeSprint := GetActiveSprint(db, projectID)
+
+		payload, err := json.Marshal(activeSprint)
+		printErr("GetActiveSprint: error marshalling activeSprint", err)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(payload))
