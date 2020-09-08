@@ -1,4 +1,26 @@
 import { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+
+export const useFetch = (getData) => {
+  const { getAccessTokenSilently } = useAuth0();
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      getAccessTokenSilently()
+        .then((token) => {
+          return getData(token);
+        })
+        .then((responseData) => {
+          if (responseData) {
+            setData(responseData);
+          }
+        });
+    })();
+  }, []);
+
+  return data;
+};
 
 export const useForm = (submit, initVal, validate) => {
   const [values, setValues] = useState(initVal);

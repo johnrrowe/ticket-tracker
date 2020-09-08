@@ -5,7 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { Loading } from "../components/loading.js";
 import { LinkTable, PopupMenu } from "../components/ui-elements.js";
-import { useForm } from "../components/custom-hooks.js";
+import { useForm, useFetch } from "../components/custom-hooks.js";
 import { CreateProject, GetUserProjects } from "../components/query.js";
 
 export const Projects = () => {
@@ -132,20 +132,7 @@ const ProjectList = () => {
     );
   };
 
-  const { getAccessTokenSilently } = useAuth0();
-  const [projects, setProjects] = useState(null);
-
-  useEffect(() => {
-    getAccessTokenSilently()
-      .then((token) => {
-        return GetUserProjects(token);
-      })
-      .then((projectData) => {
-        if (projectData) {
-          setProjects(projectData.map(layout));
-        }
-      });
-  }, []);
+  const projects = useFetch(GetUserProjects).map(layout);
 
   return (
     <div>

@@ -104,7 +104,7 @@ func CreateSprint(db *sql.DB, info sprint) bool {
 }
 
 func GetSprints(db *sql.DB, projectID string) []sprint {
-	q := `SELECT name, project_id
+	q := `SELECT id, name, project_id
 		  FROM sprints
 		  WHERE project_id = ?`
 
@@ -115,7 +115,7 @@ func GetSprints(db *sql.DB, projectID string) []sprint {
 	var sprints []sprint
 	for rows.Next() {
 		var s sprint
-		err = rows.Scan(&s.Name, &s.ProjectID)
+		err = rows.Scan(&s.ID, &s.Name, &s.ProjectID)
 		printErr("GetSprints: error scanning row", err)
 
 		sprints = append(sprints, s)

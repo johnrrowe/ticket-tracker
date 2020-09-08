@@ -45,7 +45,7 @@ var AddUserHandler = func(db *sql.DB) http.Handler {
 }
 
 type project struct {
-	ID   int    `json:"id"`
+	ID   int    `json:"ID"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Lead string `json:"lead"`
@@ -73,7 +73,7 @@ var GetProjectsHandler = func(db *sql.DB) http.Handler {
 }
 
 type sprint struct {
-	ID        int
+	ID        int    `json:"ID"`
 	ProjectID string `json:"project"`
 	Name      string `json:"name"`
 }

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import { CreateSprint, GetSprints } from "../components/query.js";
-import { useForm } from "../components/custom-hooks.js";
+import { useForm, useFetch } from "../components/custom-hooks.js";
 import { PopupMenu, LinkTable } from "../components/ui-elements.js";
 
 export const Backlog = () => {
@@ -38,32 +38,26 @@ export const Backlog = () => {
 };
 
 const SprintList = () => {
-  const { getAccessTokenSilently } = useAuth0();
-  const [sprints, setSprints] = useState(null);
+  const layout = (sprint) => {
+    return (
+      <div
+        key={sprint.ID}
+        className="flex flex-col h-full w-full shadow rounded bg-gray-200 p-3"
+      >
+        {sprint.name}
+        <button className="flex focus:outline-none w-24">Create Job</button>
+      </div>
+    );
+  };
 
-  useEffect(() => {
-    getAccessTokenSilently()
-      .then((token) => {
-        return GetSprints(token);
-      })
-      .then((sprintData) => {
-        if (sprintData) {
-          setSprints(sprintData);
-        }
-      });
-  }, []);
+  const sprints = useFetch(GetSprints).map(layout);
 
   return (
-    <div className="flex flex-col space-y-6 h-64">
-      {sprints &&
-        sprints.map((sprint, index) => (
-          <div
-            key={index}
-            className="shadow rounded h-full w-full bg-gray-200 text-center p-3"
-          >
-            {sprint.name}
-          </div>
-        ))}
+    <div className="flex flex-col space-y-6">
+      {sprints}
+      <div className="shadow rounded h-full w-full bg-gray-200 text-center p-3">
+        Backlog
+      </div>
     </div>
   );
 };
