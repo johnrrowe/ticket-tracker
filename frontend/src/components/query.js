@@ -1,95 +1,72 @@
-const hostname = "http://localhost:8080";
-
-export const AddUserIfNotExist = (user, token) => {
-  try {
-    fetch("http://localhost:8080/add_user", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ name: user.nickname, email: user.name }),
-    });
-  } catch (error) {
-    console.error(error);
+const AuthorizedFetch = async (path, method, headers, body, token) => {
+  let request = {
+    method: method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...headers,
+    },
+  };
+  if (method === "POST") {
+    request.body = JSON.stringify(body);
   }
-};
 
-export const CreateProject = (proj, token) => {
   try {
-    fetch("http://localhost:8080/create_project", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        name: proj.name,
-        type: proj.type,
-      }),
-    });
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-export const GetUserProjects = (token) => {
-  try {
-    const responseData = fetch("http://localhost:8080/get_projects", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((response) => {
-      return response.json();
-    });
-
-    return responseData;
+    const response = await fetch("http://localhost:8080" + path, request);
+    if (response) {
+      return await response.json();
+    }
   } catch (error) {
     console.error(error);
     return null;
   }
 };
 
-export const CreateSprint = (sprint, token) => {
-  try {
-    const project_id = new URLSearchParams(window.location.search).get(
-      "project"
-    );
+export const AddUserIfNotExist = (user, token) => {
+  AuthorizedFetch(
+    "/add_user",
+    "POST",
+    null,
+    { name: user.nickname, email: user.name },
+    token
+  );
+};
 
-    fetch("http://localhost:8080/create_sprint", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        project: project_id,
-        name: sprint.name,
-      }),
-    });
-  } catch (error) {
-    console.error(error);
-  }
+export const CreateProject = (proj, token) => {
+  AuthorizedFetch(
+    "/create_project",
+    "POST",
+    null,
+    {
+      name: proj.name,
+      type: proj.type,
+    },
+    token
+  );
+};
+
+export const GetUserProjects = (token) => {
+  const response = AuthorizedFetch("/get_projects", "GET", null, null, token);
+  return response;
+};
+
+export const CreateSprint = (sprint, token) => {
+  const project_id = new URLSearchParams(window.location.search).get("project");
+  AuthorizedFetch(
+    "/create_sprint",
+    "POST",
+    null,
+    { project: project_id, name: sprint.name },
+    token
+  );
 };
 
 export const GetSprints = (token) => {
-  try {
-    const project_id = new URLSearchParams(window.location.search).get(
-      "project"
-    );
-
-    const responseData = fetch("http://localhost:8080/get_sprints", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Project: `${project_id}`,
-      },
-    }).then((response) => {
-      return response.json();
-    });
-
-    console.log(responseData);
-
-    return responseData;
-  } catch (error) {
-    console.error(error);
-  }
+  const project_id = new URLSearchParams(window.location.search).get("project");
+  return AuthorizedFetch(
+    "/get_sprints",
+    "GET",
+    { project: project_id },
+    null,
+    token
+  );
 };
