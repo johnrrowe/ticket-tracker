@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
-import { NavLoggedIn } from "../components/nav-bar.js";
 import { Loading } from "../components/loading.js";
-import { LinkTable, PopupMenu } from "../components/ui-elements.js";
+import {
+  LinkTable,
+  PopupMenu,
+  StandardView,
+} from "../components/ui-elements.js";
 import { useForm, useFetch } from "../components/custom-hooks.js";
 import { CreateProject, GetUserProjects } from "../components/query.js";
 
@@ -21,12 +24,9 @@ export const Projects = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-none">
-        <NavLoggedIn />
-      </div>
-      <div className="flex-auto flex-col">
-        <div className="flex flex-none flex-row h-16 p-4 items-center justify-between">
+    <StandardView
+      header={
+        <div className="flex flex-row items-center justify-between">
           <div className="text-lg">Projects</div>
           <div>
             <button
@@ -41,14 +41,14 @@ export const Projects = () => {
             {showMenu && <CreateProjectMenu close={setShowMenu} />}
           </div>
         </div>
+      }
+      top={
         <div className="flex-none flex-col h-24 p-4 space-y-4">
           <div className="flex-none text-base">Search and Filter</div>
         </div>
-        <div className="flex-auto bg-gray-400 h-full p-4">
-          <ProjectList />
-        </div>
-      </div>
-    </div>
+      }
+      bottom={<ProjectList />}
+    />
   );
 };
 

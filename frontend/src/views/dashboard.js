@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 import { AddUserIfNotExist } from "../components/query.js";
-import { NavLoggedIn } from "../components/nav-bar.js";
-import { LinkTable, BoxedList } from "../components/ui-elements.js";
+import {
+  LinkTable,
+  BoxedList,
+  StandardView,
+} from "../components/ui-elements.js";
 
 export const Dashboard = () => {
   const { getAccessTokenSilently, user } = useAuth0();
@@ -15,23 +18,18 @@ export const Dashboard = () => {
   }, [getAccessTokenSilently, user]);
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-none">
-        <NavLoggedIn />
-      </div>
-      <div className="flex-auto flex-col">
-        <div className="flex-none h-16 p-4 text-lg">Dashboard Header</div>
+    <StandardView
+      header="Dashboard Header"
+      top={
         <div className="flex-none flex-col h-56 p-4 space-y-4">
           <div className="flex-none text-base">Projects</div>
           <div className="flex flex-row space-x-6 h-40">
             <ProjectBoxes />
           </div>
         </div>
-        <div className="flex-auto bg-gray-400 h-full p-4">
-          <Recents />
-        </div>
-      </div>
-    </div>
+      }
+      bottom={<Recents />}
+    />
   );
 };
 

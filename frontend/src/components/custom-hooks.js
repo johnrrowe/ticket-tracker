@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export const useFetch = (getData) => {
+export const useFetch = (getData, params = null) => {
   const { getAccessTokenSilently } = useAuth0();
   const [data, setData] = useState([]);
 
   useEffect(() => {
     (async () => {
-      getAccessTokenSilently()
+      await getAccessTokenSilently()
         .then((token) => {
-          return getData(token);
+          return params ? getData(params, token) : getData(token);
         })
         .then((responseData) => {
           if (responseData) {

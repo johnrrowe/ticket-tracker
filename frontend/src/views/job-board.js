@@ -1,27 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
-import { BoxedList } from "../components/ui-elements.js";
+import { BoxedList, StandardView } from "../components/ui-elements.js";
 import { useFetch } from "../components/custom-hooks.js";
 import { GetActiveSprint, GetJobStatuses } from "../components/query.js";
+import { act } from "react-dom/test-utils";
 
 export const JobBoard = () => {
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-none">
-        <NavLoggedIn />
-      </div>
-      <div className="flex-auto flex-col">
-        <div className="flex-none h-16 p-4 text-lg">Job Board Header</div>
-        <div className="flex-none flex-col h-full p-4 space-y-4">
-          <div className="flex-none text-base">Jobs</div>
-          <div className="flex flex-row space-x-6 h-64">
-            <JobStatuses />
-          </div>
+    <StandardView
+      header={<div className="text-lg">Job Board Header</div>}
+      top={<div className="flex-none">Jobs</div>}
+      bottom={
+        <div className="flex flex-row space-x-6 h-64">
+          <JobStatuses />
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 };
 

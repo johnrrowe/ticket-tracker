@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-import { NavLoggedIn } from "../components/nav-bar.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import {
   CreateSprint,
@@ -9,33 +8,31 @@ import {
   GetActiveSprint,
 } from "../components/query.js";
 import { useForm, useFetch } from "../components/custom-hooks.js";
-import { PopupMenu } from "../components/ui-elements.js";
+import { PopupMenu, StandardView } from "../components/ui-elements.js";
 
 export const Backlog = () => {
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [showStartMenu, setShowStartMenu] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen">
-      <div className="flex-none">
-        <NavLoggedIn />
-      </div>
-      <div className="flex-auto flex-col">
-        <div className="flex-none h-16 p-4 text-lg">Backlog Header</div>
+    <StandardView
+      header={<div className="text-lg">Backlog Header</div>}
+      top={
+        <div className="flex flex-none flex-row p-4 text-base justify-between">
+          <div>Sprints</div>
+          <button
+            onClick={() => {
+              setShowCreateMenu(!showCreateMenu);
+            }}
+            className="rounded bg-blue-600 focus:outline-none text-white px-2 py-1"
+          >
+            Create Sprint
+          </button>
+          {showCreateMenu && <CreateSprintMenu close={setShowCreateMenu} />}
+        </div>
+      }
+      bottom={
         <div className="flex-none flex-col h-full p-4 space-y-8">
-          <div className="flex flex-none flex-row text-base justify-between">
-            <div>Sprints</div>
-            <button
-              onClick={() => {
-                setShowCreateMenu(!showCreateMenu);
-              }}
-              className="rounded bg-blue-600 focus:outline-none text-white px-2 py-1"
-            >
-              Create Sprint
-            </button>
-
-            {showCreateMenu && <CreateSprintMenu close={setShowCreateMenu} />}
-          </div>
           <SprintList setShowMenu={setShowStartMenu} />
           {showStartMenu && (
             <StartSprintMenu
@@ -44,8 +41,8 @@ export const Backlog = () => {
             />
           )}
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 };
 

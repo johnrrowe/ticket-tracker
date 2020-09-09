@@ -99,11 +99,11 @@ export const GetActiveSprint = (token) => {
 };
 
 export const GetJobStatuses = (token) => {
-  const sprint_id = new URLSearchParams(window.location.search).get("sprint");
+  const sprintID = new URLSearchParams(window.location.search).get("sprint");
   return AuthorizedFetch(
     "/get_statuses",
     "GET",
-    { sprint: sprint_id },
+    { sprint: sprintID },
     null,
     token
   );

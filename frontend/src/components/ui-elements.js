@@ -1,4 +1,20 @@
 import React from "react";
+import { NavLoggedIn } from "./nav-bar";
+
+export const StandardView = (props) => {
+  return (
+    <div className="flex flex-col h-screen">
+      <div className="flex-none">
+        <NavLoggedIn />
+      </div>
+      <div className="flex-auto flex-col">
+        <div className="flex-none h-16 p-4">{props.header}</div>
+        {props.top}
+        <div className="flex-auto bg-gray-400 h-full p-4">{props.bottom}</div>
+      </div>
+    </div>
+  );
+};
 
 export const LinkTable = (props) => {
   return (
