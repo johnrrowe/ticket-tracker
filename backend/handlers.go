@@ -122,3 +122,17 @@ var GetActiveSprintHandler = func(db *sql.DB) http.Handler {
 		w.Write([]byte(payload))
 	})
 }
+
+var GetJobStatusesHandler = func(db *sql.DB) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		sprintID := req.Header.Get("sprint")
+		statuses := GetJobStatuses(db, sprintID)
+		println(sprintID)
+
+		payload, err := json.Marshal(statuses)
+		printErr("GetJobStatuses: error marshalling job statuses", err)
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(payload))
+	})
+}

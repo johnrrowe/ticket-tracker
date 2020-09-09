@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import { NavLoggedIn } from "../components/nav-bar.js";
 import { BoxedList } from "../components/ui-elements.js";
+import { useFetch } from "../components/custom-hooks.js";
+import { GetActiveSprint, GetJobStatuses } from "../components/query.js";
 
 export const JobBoard = () => {
   return (
@@ -24,15 +26,24 @@ export const JobBoard = () => {
 };
 
 const JobStatuses = () => {
-  const projects = {};
-  const projectID = new URLSearchParams(window.location.search).get("project");
+  const activeSprint = useFetch(GetActiveSprint);
+  if (activeSprint.length !== 0) {
+    window.history.pushState(
+      {},
+      null,
+      `/projects/boards/?project=${activeSprint.ID}&sprint=${activeSprint.project}`
+    );
+  }
 
-  return Object.keys(projects).length === 0 ? (
+  const jobStatuses = useFetch(GetJobStatuses);
+  return !activeSprint ? (
     <div>
       <div>No Sprints Started</div>
-      <Link to={`/projects/backlog/?project=${projectID}`}>Go to Backlog</Link>
+      <Link to={`/projects/backlog/?project=${activeSprint.ProjectID}`}>
+        Go to Backlog
+      </Link>
     </div>
   ) : (
-    <BoxedList list={projects} />
+    <BoxedList list={jobStatuses} />
   );
 };

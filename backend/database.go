@@ -146,5 +146,27 @@ func GetActiveSprint(db *sql.DB, projectID string) sprint {
 	printErr("GetActiveSprint: error scanning row", err)
 
 	return s
+}
 
+func GetJobStatuses(db *sql.DB, sprintID string) []string {
+	q := `SELECT name
+		  FROM job_status
+		  WHERE sprint_id = ?`
+
+	rows, err := db.Query(q, sprintID)
+	defer rows.Close()
+	printErr("GetJobStatuses: error querying job statuses", err)
+
+	var statuses []string
+	for rows.Next() {
+		var s string
+		err = rows.Scan(&s)
+		printErr("GetJobStatuses: error scanning row", err)
+
+		statuses = append(statuses, s)
+	}
+	err = rows.Err()
+	printErr("GetJobStatuses", err)
+
+	return statuses
 }

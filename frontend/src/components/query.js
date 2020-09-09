@@ -97,3 +97,14 @@ export const GetActiveSprint = (token) => {
     token
   );
 };
+
+export const GetJobStatuses = (token) => {
+  const sprint_id = new URLSearchParams(window.location.search).get("sprint");
+  return AuthorizedFetch(
+    "/get_statuses",
+    "GET",
+    { sprint: sprint_id },
+    null,
+    token
+  );
+};
