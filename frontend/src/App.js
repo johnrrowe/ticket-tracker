@@ -7,16 +7,21 @@ import { Dashboard } from "./views/dashboard.js";
 import { Projects } from "./views/projects.js";
 import { JobBoard } from "./views/job-board.js";
 import { Backlog } from "./views/backlog.js";
+import { GlobalContext } from "./model_update/model.js";
 
 const App = () => {
   return (
-    <Switch>
-      <Route exact path="/" component={Home} />
-      <PrivateRoute path="/dashboard" component={Dashboard} />
-      <PrivateRoute exact path="/projects" component={Projects} />
-      <PrivateRoute path="/projects/boards/" component={JobBoard} />
-      <PrivateRoute path="/projects/backlog/" component={Backlog} />
-    </Switch>
+    <GlobalContext
+      component={
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <PrivateRoute path="/dashboard" component={Dashboard} />
+          <PrivateRoute exact path="/projects" component={Projects} />
+          <PrivateRoute path="/projects/boards/" component={JobBoard} />
+          <PrivateRoute path="/projects/backlog/" component={Backlog} />
+        </Switch>
+      }
+    />
   );
 };
 

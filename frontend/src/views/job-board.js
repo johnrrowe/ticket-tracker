@@ -1,11 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 
-import { NavLoggedIn } from "../components/nav-bar.js";
 import { BoxedList, StandardView } from "../components/ui-elements.js";
-import { useFetch } from "../components/custom-hooks.js";
-import { GetActiveSprint, GetJobStatuses } from "../components/query.js";
-import { act } from "react-dom/test-utils";
+import {
+  GetActiveSprint,
+  GetJobStatuses,
+  GetSprints,
+} from "../components/query.js";
+import {
+  SprintContext,
+  ProjectContext,
+  DispatchContext,
+  JobContext,
+} from "../model_update/model.js";
 
 export const JobBoard = () => {
   return (
@@ -22,24 +29,44 @@ export const JobBoard = () => {
 };
 
 const JobStatuses = () => {
-  const activeSprint = useFetch(GetActiveSprint);
-  if (activeSprint.length !== 0) {
-    window.history.pushState(
-      {},
-      null,
-      `/projects/boards/?project=${activeSprint.ID}&sprint=${activeSprint.project}`
-    );
-  }
+  const dispatch = useContext(DispatchContext);
+  const projCtx = useContext(ProjectContext);
+  useEffect(() => {
+    dispatch({
+      type: "get",
+      query: GetSprints,
+      params: projCtx.selected,
+      key: "sprints",
+    });
+    dispatch({
+      type: "get",
+      query: GetActiveSprint,
+      params: projCtx.selected,
+      key: "active_sprint",
+    });
+  }, [projCtx.selected]);
 
-  const jobStatuses = useFetch(GetJobStatuses);
-  return !activeSprint ? (
+  const sprintCtx = useContext(SprintContext);
+
+  useEffect(() => {
+    if (sprintCtx.active) {
+      dispatch({
+        type: "get",
+        query: GetJobStatuses,
+        params: sprintCtx.active.ID,
+        key: "jobs",
+      });
+    }
+  }, [sprintCtx.active]);
+
+  const jobCtx = useContext(JobContext);
+
+  return !sprintCtx.active ? (
     <div>
       <div>No Sprints Started</div>
-      <Link to={`/projects/backlog/?project=${activeSprint.ProjectID}`}>
-        Go to Backlog
-      </Link>
+      <Link to={`/projects/backlog`}>Go to Backlog</Link>
     </div>
   ) : (
-    <BoxedList list={jobStatuses} />
+    <BoxedList list={jobCtx.jobs} />
   );
 };

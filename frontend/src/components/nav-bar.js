@@ -13,14 +13,11 @@ export const NavigationBar = (props) => {
 
 export const NavLoggedIn = () => {
   const { logout } = useAuth0();
-
   return (
     <NavigationBar
       left={
         <div className="flex flex-row space-x-4">
-          <button className="focus:outline-none">
-            <Link to="/dashboard">Ticket Tracker</Link>
-          </button>
+          <Link to="/dashboard">Ticket Tracker</Link>
           <NavMenuButtons
             buttons={[
               { name: "Projects", ID: 1, content: <ProjectMenu /> },

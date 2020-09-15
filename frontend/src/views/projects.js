@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -8,8 +8,9 @@ import {
   PopupMenu,
   StandardView,
 } from "../components/ui-elements.js";
-import { useForm, useFetch } from "../components/custom-hooks.js";
+import { useForm } from "../components/custom-hooks.js";
 import { CreateProject, GetUserProjects } from "../components/query.js";
+import { ProjectContext, DispatchContext } from "../model_update/model.js";
 
 export const Projects = () => {
   const { loading, user } = useAuth0();
@@ -116,10 +117,27 @@ const CreateProjectMenu = (props) => {
 };
 
 const ProjectList = () => {
+  const dispatch = useContext(DispatchContext);
+
+  useEffect(() => {
+    dispatch({
+      type: "get",
+      query: GetUserProjects,
+      key: "projects",
+    });
+  }, []);
+
   const layout = (project) => {
     return (
       <Link
-        to={`/projects/boards/?project=${project.ID}`}
+        to={`/projects/boards`}
+        onClick={() => {
+          dispatch({
+            type: "setState",
+            key: "selected_proj",
+            payload: project.ID,
+          });
+        }}
         className="flex items-center justify-between p-3"
       >
         <div className="flex flex-row space-x-6">
@@ -132,7 +150,7 @@ const ProjectList = () => {
     );
   };
 
-  const projects = useFetch(GetUserProjects).map(layout);
+  const projCtx = useContext(ProjectContext);
 
   return (
     <div>
@@ -145,7 +163,7 @@ const ProjectList = () => {
         <div>lead</div>
       </div>
       <div className="flex flex-col space-y-1">
-        {projects && <LinkTable table={projects} />}
+        {projCtx.projects && <LinkTable table={projCtx.projects.map(layout)} />}
       </div>
       <div className="border-b border-gray-700" />
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import {
@@ -7,12 +7,18 @@ import {
   StartSprint,
   GetActiveSprint,
 } from "../components/query.js";
-import { useForm, useFetch } from "../components/custom-hooks.js";
+import { useForm } from "../components/custom-hooks.js";
 import { PopupMenu, StandardView } from "../components/ui-elements.js";
+import {
+  SprintContext,
+  DispatchContext,
+  ProjectContext,
+} from "../model_update/model.js";
 
 export const Backlog = () => {
-  const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const [showCreateSprint, setShowCreateSprint] = useState(false);
   const [showStartMenu, setShowStartMenu] = useState(false);
+  const [showCreateJob, setShowCreateJob] = useState(false);
 
   return (
     <StandardView
@@ -22,23 +28,29 @@ export const Backlog = () => {
           <div>Sprints</div>
           <button
             onClick={() => {
-              setShowCreateMenu(!showCreateMenu);
+              setShowCreateSprint(!showCreateSprint);
             }}
             className="rounded bg-blue-600 focus:outline-none text-white px-2 py-1"
           >
             Create Sprint
           </button>
-          {showCreateMenu && <CreateSprintMenu close={setShowCreateMenu} />}
+          {showCreateSprint && <CreateSprintMenu close={setShowCreateSprint} />}
         </div>
       }
       bottom={
         <div className="flex-none flex-col h-full p-4 space-y-8">
-          <SprintList setShowMenu={setShowStartMenu} />
+          <SprintList
+            setShowMenu={setShowStartMenu}
+            setShowCreateJob={setShowCreateJob}
+          />
           {showStartMenu && (
             <StartSprintMenu
               close={setShowStartMenu}
               sprintID={showStartMenu}
             />
+          )}
+          {showCreateJob && (
+            <CreateJobMenu close={setShowCreateJob} sprintID={showCreateJob} />
           )}
         </div>
       }
@@ -47,7 +59,25 @@ export const Backlog = () => {
 };
 
 const SprintList = (props) => {
-  const activeSprintID = useFetch(GetActiveSprint).ID;
+  const dispatch = useContext(DispatchContext);
+  const projCtx = useContext(ProjectContext);
+  useEffect(() => {
+    dispatch({
+      type: "get",
+      query: GetSprints,
+      params: projCtx.selected,
+      key: "sprints",
+    });
+    dispatch({
+      type: "get",
+      query: GetActiveSprint,
+      params: projCtx.selected,
+      key: "active_sprint",
+    });
+  }, [projCtx.selected]);
+
+  const sprintCtx = useContext(SprintContext);
+
   const layout = (sprint) => {
     return (
       <div
@@ -57,20 +87,25 @@ const SprintList = (props) => {
         <div className="flex justify-between">
           {sprint.name}
           <ManageSprintBtns
-            activeSprint={activeSprintID}
+            activeSprint={sprintCtx.active.ID}
             sprintID={sprint.ID}
           />
         </div>
-        <button className="flex focus:outline-none w-24">Create Job</button>
+        <button
+          onClick={() => {
+            props.setShowCreateJob(sprint.ID);
+          }}
+          className="flex w-24 rounded bg-blue-600 focus:outline-none text-white px-2 py-1"
+        >
+          Create Job
+        </button>
       </div>
     );
   };
 
-  const sprints = useFetch(GetSprints).map(layout);
-
   return (
     <div className="flex flex-col space-y-6">
-      {sprints}
+      {sprintCtx.sprints && sprintCtx.sprints.map(layout)}
       <div className="shadow rounded h-full w-full bg-gray-200 text-center p-3">
         Backlog
       </div>
@@ -218,5 +253,59 @@ const ManageSprintBtns = (props) => {
         </button>
       )}
     </div>
+  );
+};
+
+const CreateJobMenu = (props) => {
+  const { getAccessTokenSilently } = useAuth0();
+  const submit = () => {
+    getAccessTokenSilently().then((token) => {
+      // CreateJob(
+      //   {
+      //     ID: values.ID,
+      //     start: values.startDate,
+      //     end: values.endDate,
+      //   },
+      //   token
+      // );
+    });
+  };
+
+  const validate = (values) => {
+    let errors = {};
+    if (!values.name) {
+      errors.name = "Job name is required";
+    } else if (!/^[a-zA-Z0-9_ -]{1,}$/.test(values.name)) {
+      errors.name = "Job name is invalid";
+    }
+
+    return errors;
+  };
+
+  const { values, errors, handleChange, handleSubmit } = useForm(
+    submit,
+    { name: "" },
+    validate
+  );
+  return (
+    <PopupMenu
+      close={props.close}
+      handleSubmit={handleSubmit}
+      formContent={[
+        <React.Fragment>
+          <label>Name</label>
+          <div className="flex flex-col">
+            <input
+              id="name"
+              value={values.name}
+              onChange={handleChange}
+              type="text"
+              className="focus:outline-none"
+            />
+            {errors.name && <p className="text-red-700">{errors.name}</p>}
+          </div>
+        </React.Fragment>,
+      ]}
+    />
   );
 };
