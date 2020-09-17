@@ -7,13 +7,9 @@ import {
   StartSprint,
   GetActiveSprint,
 } from "../components/query.js";
-import { useForm } from "../components/custom-hooks.js";
+import { useForm, useRequests } from "../components/custom-hooks.js";
 import { PopupMenu, StandardView } from "../components/ui-elements.js";
-import {
-  SprintContext,
-  DispatchContext,
-  ProjectContext,
-} from "../model_update/model.js";
+import { SprintContext, DispatchContext } from "../model_update/model.js";
 
 export const Backlog = () => {
   const [showCreateSprint, setShowCreateSprint] = useState(false);
@@ -59,24 +55,37 @@ export const Backlog = () => {
 };
 
 const SprintList = (props) => {
-  const dispatch = useContext(DispatchContext);
-  const projCtx = useContext(ProjectContext);
-  useEffect(() => {
-    dispatch({
-      type: "get",
-      query: GetSprints,
-      params: projCtx.selected,
-      key: "sprints",
-    });
-    dispatch({
-      type: "get",
-      query: GetActiveSprint,
-      params: projCtx.selected,
-      key: "active_sprint",
-    });
-  }, [projCtx.selected]);
-
+  const projectID = new URLSearchParams(window.location.search).get("project");
   const sprintCtx = useContext(SprintContext);
+  const { chainDispatch } = useContext(DispatchContext);
+
+  useRequests(
+    [
+      chainDispatch(
+        {
+          type: "fetch",
+          query: GetSprints,
+          payload: projectID,
+        },
+        {
+          type: "setState",
+          key: "sprints",
+        }
+      ),
+      chainDispatch(
+        {
+          type: "fetch",
+          query: GetActiveSprint,
+          payload: projectID,
+        },
+        {
+          type: "setState",
+          key: "active_sprint",
+        }
+      ),
+    ],
+    []
+  );
 
   const layout = (sprint) => {
     return (
@@ -87,7 +96,7 @@ const SprintList = (props) => {
         <div className="flex justify-between">
           {sprint.name}
           <ManageSprintBtns
-            activeSprint={sprintCtx.active.ID}
+            activeSprint={sprintCtx.active ? sprintCtx.active.ID : null}
             sprintID={sprint.ID}
           />
         </div>

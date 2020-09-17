@@ -45,8 +45,7 @@ export const CreateProject = (proj, token) => {
 };
 
 export const GetUserProjects = (_, token) => {
-  const response = AuthorizedFetch("/get_projects", "GET", null, null, token);
-  return response;
+  return AuthorizedFetch("/get_projects", "GET", null, null, token);
 };
 
 export const CreateSprint = (sprint, token) => {
@@ -60,14 +59,10 @@ export const CreateSprint = (sprint, token) => {
   );
 };
 
-export const GetSprints = (projectID, token) => {
-  return AuthorizedFetch(
-    "/get_sprints",
-    "GET",
-    { project: projectID },
-    null,
-    token
-  );
+export const GetSprints = (projID, token) => {
+  return projID
+    ? AuthorizedFetch("/get_sprints", "GET", { project: projID }, null, token)
+    : null;
 };
 
 export const StartSprint = (sprint, token) => {
@@ -92,12 +87,9 @@ export const GetActiveSprint = (projectID, token) => {
     : null;
 };
 
-export const GetJobStatuses = (sprintID, token) => {
-  return AuthorizedFetch(
-    "/get_statuses",
-    "GET",
-    { sprint: sprintID },
-    null,
-    token
-  );
+export const GetJobStatuses = (sprint, token) => {
+  const sprintID = sprint.ID;
+  return sprintID
+    ? AuthorizedFetch("/get_statuses", "GET", { sprint: sprintID }, null, token)
+    : null;
 };

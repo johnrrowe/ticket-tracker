@@ -1,18 +1,10 @@
-import React, { useEffect, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { BoxedList, StandardView } from "../components/ui-elements.js";
-import {
-  GetActiveSprint,
-  GetJobStatuses,
-  GetSprints,
-} from "../components/query.js";
-import {
-  SprintContext,
-  ProjectContext,
-  DispatchContext,
-  JobContext,
-} from "../model_update/model.js";
+import { GetActiveSprint, GetJobStatuses } from "../components/query.js";
+import { JobContext, DispatchContext } from "../model_update/model.js";
+import { useRequests } from "../components/custom-hooks.js";
 
 export const JobBoard = () => {
   return (
@@ -29,44 +21,39 @@ export const JobBoard = () => {
 };
 
 const JobStatuses = () => {
-  const dispatch = useContext(DispatchContext);
-  const projCtx = useContext(ProjectContext);
-  useEffect(() => {
-    dispatch({
-      type: "get",
-      query: GetSprints,
-      params: projCtx.selected,
-      key: "sprints",
-    });
-    dispatch({
-      type: "get",
-      query: GetActiveSprint,
-      params: projCtx.selected,
-      key: "active_sprint",
-    });
-  }, [projCtx.selected]);
+  const jobs = useContext(JobContext);
+  const projectID = new URLSearchParams(window.location.search).get("project");
+  const { chainDispatch } = useContext(DispatchContext);
 
-  const sprintCtx = useContext(SprintContext);
+  useRequests(
+    [
+      chainDispatch(
+        {
+          type: "fetch",
+          query: GetActiveSprint,
+          payload: projectID,
+        },
+        chainDispatch(
+          {
+            type: "fetch",
+            query: GetJobStatuses,
+          },
+          {
+            type: "setState",
+            key: "jobs",
+          }
+        )
+      ),
+    ],
+    []
+  );
 
-  useEffect(() => {
-    if (sprintCtx.active) {
-      dispatch({
-        type: "get",
-        query: GetJobStatuses,
-        params: sprintCtx.active.ID,
-        key: "jobs",
-      });
-    }
-  }, [sprintCtx.active]);
-
-  const jobCtx = useContext(JobContext);
-
-  return !sprintCtx.active ? (
+  return jobs ? (
+    <BoxedList list={jobs} />
+  ) : (
     <div>
       <div>No Sprints Started</div>
       <Link to={`/projects/backlog`}>Go to Backlog</Link>
     </div>
-  ) : (
-    <BoxedList list={jobCtx.jobs} />
   );
 };

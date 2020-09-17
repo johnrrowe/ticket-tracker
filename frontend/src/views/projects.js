@@ -117,27 +117,29 @@ const CreateProjectMenu = (props) => {
 };
 
 const ProjectList = () => {
-  const dispatch = useContext(DispatchContext);
+  const { dispatch } = useContext(DispatchContext);
+  const projects = useContext(ProjectContext);
 
   useEffect(() => {
     dispatch({
-      type: "get",
+      type: "fetch",
       query: GetUserProjects,
-      key: "projects",
+      callback: (response) => {
+        if (response) {
+          dispatch({
+            type: "setState",
+            key: "projects",
+            payload: response,
+          });
+        }
+      },
     });
   }, []);
 
   const layout = (project) => {
     return (
       <Link
-        to={`/projects/boards`}
-        onClick={() => {
-          dispatch({
-            type: "setState",
-            key: "selected_proj",
-            payload: project.ID,
-          });
-        }}
+        to={`/projects/backlog/?project=${project.ID}`}
         className="flex items-center justify-between p-3"
       >
         <div className="flex flex-row space-x-6">
@@ -150,8 +152,6 @@ const ProjectList = () => {
     );
   };
 
-  const projCtx = useContext(ProjectContext);
-
   return (
     <div>
       <div className="flex flex-row border-b border-gray-700 justify-between p-3">
@@ -163,7 +163,7 @@ const ProjectList = () => {
         <div>lead</div>
       </div>
       <div className="flex flex-col space-y-1">
-        {projCtx.projects && <LinkTable table={projCtx.projects.map(layout)} />}
+        <LinkTable table={projects.map(layout)} />
       </div>
       <div className="border-b border-gray-700" />
     </div>

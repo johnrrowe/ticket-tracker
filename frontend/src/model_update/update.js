@@ -6,37 +6,25 @@ export const useAppReducer = () => {
 
   const init = {
     projects: [],
-    selected_proj: null,
     sprints: [],
     active_sprint: null,
     jobs: [],
-    selected_job: null,
   };
 
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
-      case "get": {
+      case "fetch": {
         getAccessTokenSilently()
           .then((token) => {
-            return action.query(action.params, token);
+            return action.query(action.payload, token);
           })
           .then((response) => {
-            if (response) {
-              dispatch({
-                type: "setState",
-                key: action.key,
-                payload: response,
-              });
-            }
+            action.callback(response);
           });
         return state;
       }
       case "setState": {
         return { ...state, [action.key]: action.payload };
-      }
-      case "print": {
-        console.log(action.payload);
-        return state;
       }
       default: {
         return state;
